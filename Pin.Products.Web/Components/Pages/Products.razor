@@ -4,7 +4,7 @@
 
 @if (NewProduct is not null)
 {
-    
+    <ProductCreationFormComponent OnCancel="Cancel" NewProduct="@NewProduct" OnSave="EditOrCreate"></ProductCreationFormComponent>
 }
 else if(ChosenProduct is not null)
 {
@@ -13,7 +13,7 @@ else if(ChosenProduct is not null)
 
 else if (ProductModels is not null)
 {
-    <ProductListComponent Products="ProductModels" OnClick="Choose" />
+    <ProductListComponent OnCreate="Create" Products="ProductModels" OnClick="Choose" />
 }
 else
 {
@@ -24,7 +24,7 @@ else
 
     public ProductModel ChosenProduct { get; set; }
 
-    public ProductModel NewProduct { get; set; }
+    public CreateOrUpdateProductModel NewProduct { get; set; }
 
     private string errorMessage { get; set; }
 
