@@ -2,35 +2,49 @@
 
 
 <div class="col col-lg-4 mx-auto">
-    <EditForm Model="NewProduct" OnValidSubmit="@(()=> OnSave.InvokeAsync(NewProduct))">
-
+    <EditForm Model="NewProduct" OnValidSubmit="@(()=> ImagePut() )">
+        <DataAnnotationsValidator />
         <div class="form-group">
-            <label>Name:</label>
+            <label>Title:</label>
             <InputText @bind-Value="NewProduct.Title" class="form-control" />
+            <ValidationMessage For="@(() => NewProduct.Title)" />
             <label>Price in Euro:</label>
             <InputNumber @bind-Value="NewProduct.Price" />
 
+            <ValidationMessage For="@(() => NewProduct.Price)" />
+                <div>
+                    
             <label>Description:</label>
+            </div>
             <InputText @bind-Value="NewProduct.Description" class="form-control" />
+            <ValidationMessage For="@(() => NewProduct.Description)" />
 
-
+            <label>Category:</label>
             <InputSelect class="form-select" @bind-Value="NewProduct.CategoryId">
                 @if (categories is null)
                 {
-                    <option value="1" selected disabled hidden>Empty</option>
+                    <LoadingComponent></LoadingComponent>
                     
                 }
                 else
                 {
                     @foreach (CategoryModel category in categories)
                     {
-                        <option value="@category.Id">@category.Name (ID: @category.Id)</option>
+                        if (category.Id == NewProduct.CategoryId)
+                        {
+                            <option selected value="@category.Id">@category.Name (ID: @category.Id)</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Id">@category.Name (ID: @category.Id)</option>
+                        }
+
+                        
                     }
-                }
-                
+                }  
             </InputSelect>
-
-
+            <label>Image URL:</label>
+            <InputText @bind-Value="@imageurl"/>
         </div>
         <button type="submit" class="btn btn-outline-info">Save</button>
         <button type="button" class="btn btn-outline-warning" @onclick="@(() => OnCancel.InvokeAsync())">Cancel</button>
@@ -44,7 +58,21 @@
     [Parameter]
     public EventCallback OnCancel { get; set; }
 
+    public string imageurl { get; set; }
+
+    private List<string> MinionImages = new List<string> { "https://static.wikia.nocookie.net/despicableme/images/7/74/AVL_Agent_Stuart_2.jpg/revision/latest?cb=20240526191511", "https://static.wikia.nocookie.net/despicableme/images/8/8f/AVL_Agent_Kevin.jpg/revision/latest?cb=20240525052619", "https://static.wikia.nocookie.net/despicableme/images/8/84/Screenshot_2016-12-31-19-35-48_1.jpg/revision/latest?cb=20161231114054" };
+
     public IEnumerable<CategoryModel> categories { get; set; }
+
+    private async void ImagePut()
+    {   
+        if(imageurl is not null)
+        {
+            NewProduct.Images = new List<String> { imageurl };
+        }
+        
+        OnSave.InvokeAsync(NewProduct);
+    }
 
     protected override async Task OnInitializedAsync()
     {

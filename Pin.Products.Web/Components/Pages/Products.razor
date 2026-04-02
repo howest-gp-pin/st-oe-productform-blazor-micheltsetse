@@ -71,6 +71,8 @@ else
     {
         await ProductService.DeleteAsync(id);
 
+        StateHasChanged();
+
     }
 
     private async Task EditOrCreate(CreateOrUpdateProductModel createOrUpdateProductModel)
@@ -83,7 +85,7 @@ else
             createOrUpdateProductModel.Images = MinionImages;
         }
 
- 
+
         if (createOrUpdateProductModel.Id.Equals(0))
         {   //Was causing bad requests
             if (createOrUpdateProductModel.CategoryId==0)
@@ -133,6 +135,7 @@ else
         NewProduct.Id = productModel.Id;
         NewProduct.Title = productModel.Title;
         NewProduct.Price = productModel.Price;
+        NewProduct.CategoryId = productModel.Category.Id;
         NewProduct.Description = productModel.Description;
         NewProduct.Images = productModel.Images;
     }
