@@ -1,0 +1,23 @@
+﻿
+<div>
+        <h1>@Product.Title</h1>
+        @Product.Id
+       <div> 
+           <img src="@Product.Images.First()" width="400px" height="500px"/>
+           <h5>@Product.Description</h5>
+    </div>
+    <h3>€ @Product.Price</h3>
+
+    <div><button>Buy!</button><button onclick="@(()=>OnCancel.InvokeAsync())">Go back</button></div>
+</div>
+
+@code {
+    [Parameter]
+    public ProductModel Product { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+}
+
+
+
+    

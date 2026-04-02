@@ -1,0 +1,24 @@
+﻿
+<div class="col col-lg-4 mx-auto">
+    <EditForm Model="NewProduct" OnValidSubmit="@(()=> OnSave.InvokeAsync(NewProduct))">
+
+        <div class="form-group">
+            <label>Name:</label>
+            <InputText @bind-Value="NewProduct.Title" class="form-control" />
+            <label>Price in Euro:</label>
+            <InputNumber @bind-Value="NewProduct.Price" />
+            <label>Description:</label>
+            <InputText @bind-Value="NewProduct.Description" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-outline-info">Save</button>
+        <button type="button" class="btn btn-outline-warning" @onclick="@(() => OnCancel.InvokeAsync())">Cancel</button>
+    </EditForm> 
+</div>
+@code {
+    [Parameter]
+    public CreateOrUpdateProductModel NewProduct { get; set; }
+    [Parameter]
+    public EventCallback<CreateOrUpdateProductModel> OnSave { get; set; }
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+}

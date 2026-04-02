@@ -1,17 +1,120 @@
 ﻿@page "/products"
 @inject IProductApiService ProductService
 <h3>Products</h3>
-@if(ProductModels is not null)
-{ 
-    @foreach(var product in ProductModels)
-    { 
-        <p>@product</p>
-    }
+
+@if (NewProduct is not null)
+{
+    
+}
+else if(ChosenProduct is not null)
+{
+    <ProductDetailComponent Product="@ChosenProduct" OnCancel="Cancel"></ProductDetailComponent>
+}
+
+else if (ProductModels is not null)
+{
+    <ProductListComponent Products="ProductModels" OnClick="Choose" />
+}
+else
+{
+    <LoadingComponent></LoadingComponent>
 }
 @code {
     public IEnumerable<ProductModel> ProductModels { get; set; }
+
+    public ProductModel ChosenProduct { get; set; }
+
+    public ProductModel NewProduct { get; set; }
+
+    private string errorMessage { get; set; }
+
+    private async Task GetProducts()
+    {
+        ChosenProduct = null;
+        ProductModels = null;
+        var result = await ProductService.GetAllAsync();
+        if (result.IsSuccess)
+        {
+            ProductModels = result.Data;
+        }
+        else
+        {
+            //display error
+            errorMessage = string.Join(' ', result.Errors);
+        }
+    }
+
+    //reacts/handles a click on the 'New' button
+    //displays the form
+    private void NewCategory()
+    {
+        errorMessage = null;
+        ChosenProduct = new();
+    }
+
+
+    private void Cancel()
+    {
+        ChosenProduct = null;
+        NewProduct = null;
+    }
+
+
     protected override async Task OnInitializedAsync()
     {
-        
+        await GetProducts();
+
+    }
+    private async Task Delete(ProductModel product)
+    {
+        await ProductService.DeleteAsync(product.Id);
+
+    }
+
+    private async Task EditOrCreate(CreateOrUpdateProductModel createOrUpdateProductModel)
+    {
+        //check if id == 0 => new category else update category
+        //call service class to send post to api
+        var result = new ResultModel<CreateOrUpdateProductModel>();
+        if (createOrUpdateProductModel.Id.Equals(0))
+        {
+           // result = await ProductService.CreateAsync(createOrUpdateProductModel);
+        }
+        else
+        {
+            //update the category
+          //  result = await ProductService.UpdateAsync(createOrUpdateProductModel);
+
+        }
+        //check if success
+        if (result.IsSuccess)
+        {
+            //show success message
+            // if (NewProduct.Id.Equals(0))
+            //   message = "Category created";
+            //else
+            //   message = "Category updated";
+        }
+        else
+        {
+            //show error message
+            errorMessage = string.Join("<br>", result.Errors);
+        }
+
+        //hide form => newCategory = null
+        //reload categories
+        await GetProducts();
+        ChosenProduct = null;
+        NewProduct = null;
+    }
+
+    private void Choose(ProductModel product)
+    {
+        ChosenProduct = product;
+    }
+
+    private void Create()
+    {
+        NewProduct = new();
     }
 }
