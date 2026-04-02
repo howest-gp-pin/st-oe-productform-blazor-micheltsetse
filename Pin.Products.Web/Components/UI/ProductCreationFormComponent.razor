@@ -1,4 +1,6 @@
-﻿
+﻿@inject ICategoryApiService categoryApi
+
+
 <div class="col col-lg-4 mx-auto">
     <EditForm Model="NewProduct" OnValidSubmit="@(()=> OnSave.InvokeAsync(NewProduct))">
 
@@ -7,8 +9,28 @@
             <InputText @bind-Value="NewProduct.Title" class="form-control" />
             <label>Price in Euro:</label>
             <InputNumber @bind-Value="NewProduct.Price" />
+
             <label>Description:</label>
             <InputText @bind-Value="NewProduct.Description" class="form-control" />
+
+
+            <InputSelect class="form-select" @bind-Value="NewProduct.CategoryId">
+                @if (categories is null)
+                {
+                    <option value="1" selected disabled hidden>Empty</option>
+                    
+                }
+                else
+                {
+                    @foreach (CategoryModel category in categories)
+                    {
+                        <option value="@category.Id">@category.Name (ID: @category.Id)</option>
+                    }
+                }
+                
+            </InputSelect>
+
+
         </div>
         <button type="submit" class="btn btn-outline-info">Save</button>
         <button type="button" class="btn btn-outline-warning" @onclick="@(() => OnCancel.InvokeAsync())">Cancel</button>
@@ -21,4 +43,16 @@
     public EventCallback<CreateOrUpdateProductModel> OnSave { get; set; }
     [Parameter]
     public EventCallback OnCancel { get; set; }
+
+    public IEnumerable<CategoryModel> categories { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await categoryApi.GetAllAsync();
+        categories = result.Data;
+        base.OnInitializedAsync();
+
+    } 
+    
+
 }

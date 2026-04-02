@@ -1,5 +1,5 @@
 ﻿
-<div class="col col-lg-2 border border-1 rounded rounded-2 text-center m-1 p-2" @onclick="@(() => OnClick.InvokeAsync(Product))">
+<div class="col col-lg-2 border border-1 rounded rounded-2 text-center m-1 p-2" >
     <img src="@Product.Images.First()" width="200px" height=" 300px" />
     <p>@Product.Title</p>
     <p>€ @Product.Price </p>
@@ -8,7 +8,7 @@
    
         <button class="btn btn-outline-info" @onclick="@(() => OnEdit.InvokeAsync(Product))">Edit</button>
          <button class="btn btn-outline-danger" @onclick="@(() => OnDelete.InvokeAsync(Product.Id))">Delete</button>
-         <h6>Press on me for more info </h6>
+        <button class="btn btn-outline-danger" @onclick="@(() => OnClick.InvokeAsync(Product))">Press on me for more info </button>
     </div>
 </div>
 

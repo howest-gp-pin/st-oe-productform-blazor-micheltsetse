@@ -13,7 +13,7 @@ else if(ChosenProduct is not null)
 
 else if (ProductModels is not null)
 {
-    <ProductListComponent OnCreate="Create" Products="ProductModels" OnClick="Choose" />
+    <ProductListComponent OnCreate="Create" Products="ProductModels" OnClick="Choose" OnDelete="Delete" OnEdit="Edit" />
 }
 else
 {
@@ -27,6 +27,8 @@ else
     public CreateOrUpdateProductModel NewProduct { get; set; }
 
     private string errorMessage { get; set; }
+
+    private List<string> MinionImages = new List<string> { "https://static.wikia.nocookie.net/despicableme/images/7/74/AVL_Agent_Stuart_2.jpg/revision/latest?cb=20240526191511", "https://static.wikia.nocookie.net/despicableme/images/8/8f/AVL_Agent_Kevin.jpg/revision/latest?cb=20240525052619", "https://static.wikia.nocookie.net/despicableme/images/8/84/Screenshot_2016-12-31-19-35-48_1.jpg/revision/latest?cb=20161231114054" };
 
     private async Task GetProducts()
     {
@@ -65,9 +67,9 @@ else
         await GetProducts();
 
     }
-    private async Task Delete(ProductModel product)
+    private async Task Delete(int id)
     {
-        await ProductService.DeleteAsync(product.Id);
+        await ProductService.DeleteAsync(id);
 
     }
 
@@ -75,25 +77,31 @@ else
     {
         //check if id == 0 => new category else update category
         //call service class to send post to api
-        var result = new ResultModel<CreateOrUpdateProductModel>();
-        if (createOrUpdateProductModel.Id.Equals(0))
+        var result = new ResultModel<ProductModel>();
+        if(createOrUpdateProductModel.Images is null)
         {
-           // result = await ProductService.CreateAsync(createOrUpdateProductModel);
+            createOrUpdateProductModel.Images = MinionImages;
+        }
+
+ 
+        if (createOrUpdateProductModel.Id.Equals(0))
+        {   //Was causing bad requests
+            if (createOrUpdateProductModel.CategoryId==0)
+            {
+                createOrUpdateProductModel.CategoryId = 1;
+            }
+            result = await ProductService.CreateAsync(createOrUpdateProductModel);
         }
         else
         {
             //update the category
-          //  result = await ProductService.UpdateAsync(createOrUpdateProductModel);
+            result = await ProductService.UpdateAsync(createOrUpdateProductModel);
 
         }
         //check if success
         if (result.IsSuccess)
         {
-            //show success message
-            // if (NewProduct.Id.Equals(0))
-            //   message = "Category created";
-            //else
-            //   message = "Category updated";
+
         }
         else
         {
@@ -116,5 +124,16 @@ else
     private void Create()
     {
         NewProduct = new();
+    }
+
+    private void Edit(ProductModel productModel)
+    {
+        //transform/project to newCategory to update
+        NewProduct = new();
+        NewProduct.Id = productModel.Id;
+        NewProduct.Title = productModel.Title;
+        NewProduct.Price = productModel.Price;
+        NewProduct.Description = productModel.Description;
+        NewProduct.Images = productModel.Images;
     }
 }
